@@ -74,16 +74,21 @@ def count_conflicts(board):
         conflict count = 0
     """
 
-    # TODO:
-    # Compare each queen with every queen
-    # that comes after it.
-    #
-    # Queens conflict when they are:
-    #
-    #   1. in the same row
-    #   2. on the same diagonal
+    conflicts = 0
 
-    pass
+    for i in range(len(board)):
+        for j in range(i + 1, len(board)):
+
+            # Same row
+            if board[i] == board[j]:
+                conflicts += 1
+
+            # Same diagonal
+            elif abs(board[i] - board[j]) == abs(i - j):
+                conflicts += 1
+
+    return conflicts
+    
 
 
 # --------------------------------------------------
@@ -102,14 +107,13 @@ def generate_neighbours(problem, board):
 
     neighbours = []
 
-    # TODO:
-    #
-    # 1. Ask the problem for the available actions.
-    # 2. Apply each action.
-    # 3. Add the resulting state to neighbours.
+    actions = problem.actions(board)
+
+    for action in actions:
+        neighbour = problem.result(board, action)
+        neighbours.append(neighbour)
 
     return neighbours
-
 
 # --------------------------------------------------
 # TASK 3 — HILL CLIMBING
@@ -142,10 +146,27 @@ def hill_climbing(problem, start_board):
 
     current = start_board
 
-    # TODO
+    while True:
 
-    pass
+        neighbours = generate_neighbours(problem, current)
 
+        if not neighbours:
+            break
+
+        best_neighbour = min(
+            neighbours,
+            key=count_conflicts
+        )
+
+        current_conflicts = count_conflicts(current)
+        best_conflicts = count_conflicts(best_neighbour)
+
+        if best_conflicts >= current_conflicts:
+            break
+
+        current = best_neighbour
+
+    return current
 
 # --------------------------------------------------
 # TASK 4 — SIMULATED ANNEALING
@@ -167,11 +188,34 @@ def simulated_annealing(problem, start_board):
     temperature = 10.0
     cooling_rate = 0.95
 
-    # TODO
+    while temperature > 0.1:
 
-    pass
+        neighbours = generate_neighbours(problem, current)
 
+        if not neighbours:
+            break
 
+        next_board = random.choice(neighbours)
+
+        current_cost = count_conflicts(current)
+        next_cost = count_conflicts(next_board)
+
+        difference = next_cost - current_cost
+
+        if difference < 0:
+            current = next_board
+
+        else:
+            probability = math.exp(
+                -difference / temperature
+            )
+
+            if random.random() < probability:
+                current = next_board
+
+        temperature *= cooling_rate
+
+    return current
 # --------------------------------------------------
 # TESTING AREA
 # --------------------------------------------------
