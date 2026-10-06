@@ -2,7 +2,7 @@
 AINL3001 — Knowledge-Driven AI
 Week 4 — Local Search and Optimisation
 BSP 2026
-
+o
 This week introduces local search.
 
 In previous weeks, search algorithms explored paths through
